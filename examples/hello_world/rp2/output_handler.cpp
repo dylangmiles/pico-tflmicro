@@ -27,21 +27,27 @@ namespace {
 
 int g_led_brightness = 0;
 
+#if PICO_BOARD_W
+    #define LED 15
+#else
+    #define LED PICO_DEFAULT_LED_PIN
+#endif
+
 // For details on what this code is doing, see
 // https://github.com/raspberrypi/pico-examples/blob/master/pwm/led_fade
 extern "C" void on_pwm_wrap() {
   // Clear the interrupt flag that brought us here
-  pwm_clear_irq(pwm_gpio_to_slice_num(PICO_DEFAULT_LED_PIN));
+  pwm_clear_irq(pwm_gpio_to_slice_num(LED));
   // Square the value to make the LED's brightness appear more linear
   // Note this range matches with the wrap value
-  pwm_set_gpio_level(PICO_DEFAULT_LED_PIN, g_led_brightness * g_led_brightness);
+  pwm_set_gpio_level(LED, g_led_brightness * g_led_brightness);
 }
 
 void init_pwm_fade() {
   // Tell the LED pin that the PWM is in charge of its value.
-  gpio_set_function(PICO_DEFAULT_LED_PIN, GPIO_FUNC_PWM);
+  gpio_set_function(LED, GPIO_FUNC_PWM);
   // Figure out which slice we just connected to the LED pin
-  uint slice_num = pwm_gpio_to_slice_num(PICO_DEFAULT_LED_PIN);
+  uint slice_num = pwm_gpio_to_slice_num(LED);
 
   // Mask our slice's IRQ output into the PWM block's single interrupt line,
   // and register our interrupt handler
@@ -74,7 +80,7 @@ void HandleOutput(float x_value, float y_value) {
   g_led_brightness = (int)(127.5f * (y_value + 1));
 
   // Log the current brightness value for display in the console.
-  MicroPrintf("%d\n", g_led_brightness);
+  MicroPrintf("%5f %5f %5d\n",x_value, y_value, g_led_brightness);
    
   // By default the sine wave is too fast to see in the LED, so slow
   // down the whole program deliberately so it's more visible.

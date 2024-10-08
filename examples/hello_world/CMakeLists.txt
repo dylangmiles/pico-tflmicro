@@ -36,8 +36,8 @@ target_link_libraries(
   pico-tflmicro_test
 )
 
-pico_enable_stdio_usb(hello_world_test 1)
-pico_enable_stdio_uart(hello_world_test 0)
+pico_enable_stdio_usb(hello_world_test 0)
+pico_enable_stdio_uart(hello_world_test 1)
 
 pico_add_extra_outputs(hello_world_test)
 
@@ -75,10 +75,20 @@ target_link_libraries(
   hello_world
   pico-tflmicro
   hardware_pwm
+
 )
 
-pico_enable_stdio_usb(hello_world 1)
-pico_enable_stdio_uart(hello_world 0)
+if (${PICO_BOARD} STREQUAL "pico_w")
+  target_link_libraries(
+    hello_world
+    pico-tflmicro
+    hardware_pwm
+    pico_cyw43_arch_none
+)
+endif()
+
+#pico_enable_stdio_usb(hello_world 0)
+#pico_enable_stdio_uart(hello_world 1)
 
 pico_add_extra_outputs(hello_world)
 
@@ -88,6 +98,7 @@ add_executable(output_handler_test "")
 target_include_directories(output_handler_test
   PRIVATE
   ${CMAKE_CURRENT_LIST_DIR}/.
+
 )
 
 set_target_properties(

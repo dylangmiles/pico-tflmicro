@@ -1,6 +1,13 @@
 
 cmake_minimum_required(VERSION 3.12)
 
+#set(PICO_BOARD pico)
+set(PICO_BOARD pico_w)
+message("PICO_BOARD is '${PICO_BOARD}'")
+if (${PICO_BOARD} STREQUAL "pico_w")
+    add_compile_definitions(PICO_BOARD_W=1)
+endif()
+
 # Pull in PICO SDK (must be before project)
 include(pico_sdk_import.cmake)
 
