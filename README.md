@@ -16,7 +16,7 @@ operations.
 
 First you'll need to follow the Pico setup instructions to initialize the
 development environment on your machine. Once that is done, make sure that the
-`PICO_SDK_PATH` environment variable has been set to the location of the Pico
+`RPI_PICO_CAM_PATH` environment variable has been set to the location of the Pico
 SDK, either in the shell you're building in, or the CMake configure environment
 variable setting of the extension if you're using VS Code.
 

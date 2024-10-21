@@ -23,6 +23,10 @@ limitations under the License.
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 #include "tensorflow/lite/schema/schema_generated.h"
+#include "pico/stdio.h"
+#if PICO_BOARD_W
+#include "pico/cyw43_arch.h"
+#endif
 
 // Globals, used for compatibility with Arduino-style sketches.
 namespace {
@@ -45,6 +49,19 @@ static uint8_t tensor_arena[kTensorArenaSize];
 
 // The name of this function is important for Arduino compatibility.
 void setup() {
+
+  // Initialise stdio
+  stdio_init_all();
+
+#if PICO_BOARD_W
+    // Initialise CYW43
+    if (cyw43_arch_init_with_country(CYW43_COUNTRY_SOUTH_AFRICA))
+    {
+        TF_LITE_REPORT_ERROR(error_reporter,
+                             "Failed to init cyw43");
+    }
+#endif
+
   // Set up logging. Google style is to avoid globals or statics because of
   // lifetime uncertainty, but since this has a trivial destructor it's okay.
   // NOLINTNEXTLINE(runtime-global-variables)
@@ -97,8 +114,7 @@ void setup() {
 // The name of this function is important for Arduino compatibility.
 void loop() {
   // Get image from provider.
-  if (kTfLiteOk != GetImage(error_reporter, kNumCols, kNumRows, kNumChannels,
-                            input->data.int8)) {
+  if (kTfLiteOk != GetImage(error_reporter, kNumCols, kNumRows, kNumChannels, input->data.int8)) {
     TF_LITE_REPORT_ERROR(error_reporter, "Image capture failed.");
   }
 

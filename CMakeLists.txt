@@ -669,6 +669,8 @@ target_link_libraries(
   pico_multicore
 )
 
+
+add_subdirectory("rp2040_hm01b0")
 add_subdirectory("examples/hello_world")
 add_subdirectory("examples/person_detection")
 

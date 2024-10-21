@@ -150,17 +150,37 @@ target_sources(person_detection
   ${CMAKE_CURRENT_LIST_DIR}/person_detect_model_data.h
 )
 
+
+
 target_link_libraries(
   person_detection
   pico-tflmicro
+  hardware_dma
+  hardware_i2c
+  hardware_pio
   hardware_pwm
+  hardware_spi
+  rp2040_hm01b0
 )
 
-pico_enable_stdio_usb(person_detection 1)
-pico_enable_stdio_uart(person_detection 0)
+if (${PICO_BOARD} STREQUAL "pico_w")
+    target_link_libraries(
+      person_detection
+      pico-tflmicro
+      pico_cyw43_arch_none
+      hardware_dma
+      hardware_i2c
+      hardware_pio
+      hardware_pwm
+      hardware_spi
+      rp2040_hm01b0
+    )
+endif()
+
+#pico_enable_stdio_usb(person_detection 1)
+#pico_enable_stdio_uart(person_detection 0)
 
 pico_add_extra_outputs(person_detection)
-
 
 add_executable(image_provider_test "")
 
